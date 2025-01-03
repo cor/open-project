@@ -1,6 +1,6 @@
 use std::fs;
 use std::io::{self, Write};
-use std::path::Path;
+use std::path::PathBuf;
 use std::process::Command;
 use clap::Parser;
 
@@ -15,7 +15,8 @@ fn main() {
     let username = args.username;
     let projectname = args.projectname;
 
-    let base_dir = Path::new("/home/cor/dev");
+    let home_dir = std::env::var("HOME").expect("Could not get HOME environment variable");
+    let base_dir = PathBuf::from(format!("{}/dev", home_dir));
     let user_dir = base_dir.join(&username);
     let project_dir = user_dir.join(&projectname);
 
