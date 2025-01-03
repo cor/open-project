@@ -44,7 +44,7 @@ fn main() {
         let mut response = String::new();
         io::stdin().read_line(&mut response).unwrap();
         if response.trim().eq_ignore_ascii_case("y") {
-            let repo_url = format!("https://github.com/{}/{}", username, projectname);
+            let repo_url = format!("{}/{}", username, projectname);
             let output = Command::new("gh")
                 .arg("repo")
                 .arg("clone")
@@ -66,7 +66,7 @@ fn main() {
     std::env::set_current_dir(&project_dir).expect("Failed to change directory to project");
 
     // Step 6: Check for existing Zellij session
-    let session_name = format!("{} {}", projectname, username);
+    let session_name = format!("{} {}", username, projectname);
     let output = Command::new("zellij")
         .arg("list-sessions")
         .output()
