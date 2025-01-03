@@ -65,26 +65,28 @@ fn main() {
     // Step 5: Change into the project directory
     std::env::set_current_dir(&project_dir).expect("Failed to change directory to project");
 
-    // Step 6: Check for existing Zellij session
+    // Step 6: Attach to a (new) Zellij session
     let session_name = format!("{} {}", username, projectname);
-    let output = Command::new("zellij")
-        .arg("list-sessions")
-        .output()
-        .expect("Failed to list Zellij sessions");
+    Command::new("zellij")
+        .arg("attach")
+        .arg("-c")
+        .arg(&session_name)
+        .status()
+        .expect("Failed to attach to Zellij session");
 
-    let session_list = String::from_utf8_lossy(&output.stdout);
-    if session_list.contains(&session_name) {
-        Command::new("zellij")
-            .arg("attach")
-            .arg(&session_name)
-            .status()
-            .expect("Failed to attach to Zellij session");
-    } else {
-        Command::new("zellij")
-            .arg("-s")
-            .arg(&session_name)
-            .status()
-            .expect("Failed to create Zellij session");
-    }
+    // let output = Command::new("zellij")
+    //     .arg("list-sessions")
+    //     .output()
+    //     .expect("Failed to list Zellij sessions");
+
+    // let session_list = String::from_utf8_lossy(&output.stdout);
+    // if session_list.contains(&session_name) {
+    // } else {
+    //     Command::new("zellij")
+    //         .arg("-s")
+    //         .arg(&session_name)
+    //         .status()
+    //         .expect("Failed to create Zellij session");
+    // }
 }
 
