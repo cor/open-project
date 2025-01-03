@@ -1,4 +1,5 @@
 use std::fs;
+use std::io::{self, Write};
 use std::path::Path;
 use std::process::Command;
 use clap::Parser;
@@ -20,8 +21,16 @@ fn main() {
 
     // Step 2: Check if the username directory exists
     if !user_dir.exists() {
-        println!("Directory for user '{}' does not exist. Creating it...", username);
-        fs::create_dir_all(&user_dir).expect("Failed to create user directory");
+        print!("Directory for user '{}' does not exist. Create it? (y/n): ", username);
+        io::stdout().flush().unwrap();
+        let mut response = String::new();
+        io::stdin().read_line(&mut response).unwrap();
+        if response.trim().eq_ignore_ascii_case("y") {
+            fs::create_dir_all(&user_dir).expect("Failed to create user directory");
+        } else {
+            println!("Exiting.");
+            return;
+        }
     }
 
     // Step 3: Change into username directory
@@ -29,17 +38,25 @@ fn main() {
 
     // Step 4: Check if the project directory exists
     if !project_dir.exists() {
-        println!("Project '{}' does not exist. Cloning it from GitHub...", projectname);
-        let repo_url = format!("https://github.com/{}/{}", username, projectname);
-        let output = Command::new("gh")
-            .arg("repo")
-            .arg("clone")
-            .arg(&repo_url)
-            .status()
-            .expect("Failed to execute 'gh repo clone'");
+        print!("Project '{}' does not exist. Clone it from GitHub? (y/n): ", projectname);
+        io::stdout().flush().unwrap();
+        let mut response = String::new();
+        io::stdin().read_line(&mut response).unwrap();
+        if response.trim().eq_ignore_ascii_case("y") {
+            let repo_url = format!("https://github.com/{}/{}", username, projectname);
+            let output = Command::new("gh")
+                .arg("repo")
+                .arg("clone")
+                .arg(&repo_url)
+                .status()
+                .expect("Failed to execute 'gh repo clone'");
 
-        if !output.success() {
-            println!("Failed to clone the repository.");
+            if !output.success() {
+                println!("Failed to clone the repository.");
+                return;
+            }
+        } else {
+            println!("Exiting.");
             return;
         }
     }
@@ -69,3 +86,4 @@ fn main() {
             .expect("Failed to create Zellij session");
     }
 }
+
